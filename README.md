@@ -1,86 +1,87 @@
-# Primeros pasos en Solana
-![Banner](./images/SolanaBanner.jpg)
-Solana es una blockchain de capa 1, es decir, cuenta con su propia infraestructura y no depende de otras blockchains para funcionar. Se encuentra orientada al alto rendimiento, y fue creada para soportar aplicaciones descentralizadas a gran escala con costos mínimos y confirmaciones casi inmediatas. Su diseño prioriza la eficiencia en la ejecución y la paralelización de transacciones.
 
-Rust es el lenguaje principal para desarrollar programas en Solana. A través de él se implementa la lógica on-chain utilizando el modelo de cuentas y programas de la red, permitiendo construir contratos inteligentes seguros, eficientes y altamente optimizables.
+# Proyecto VideojuegosDB en Solana con Rust y Anchor
 
-Puedes comenzar dándole Fork a este repositorio (abajo te explicamos como 👇)
+## 📖 Descripción
 
-Asegúrate de clonar este repositorio a tu cuenta usando el botón **`Fork`**.
+Este proyecto es una dApp en la blockchain Solana que implementa una base de datos simple para almacenar información sobre usuarios de videojuegos. Usamos Rust con el framework Anchor para crear el programa on-chain y TypeScript para interactuar con él desde cliente.
 
-![fork](./images/fork.png)
+El programa permite crear una base de datos, agregar usuarios con información personalizada, actualizar datos y eliminar usuarios.
 
-* Puedes renombrar el repositorio a lo que sea que se ajuste con tu proyecto.
+---
 
-## Solana Playground
-Solana Playground es un entorno de desarrollo online que permite escribir, compilar, desplegar y probar programas de Solana directamente desde el navegador, sin necesidad de instalar herramientas locales como Rust, Solana CLI o Anchor.
+## 🛠 Tecnología usada
 
-![Playground](./images/playground.png)
+- **Rust** con **Anchor framework** para el desarrollo del smart contract en Solana.
+- **TypeScript** usando la librería `@solana/web3.js` y el cliente generado por Anchor.
+- **Solana Blockchain**: cuenta con el sistema de cuentas para almacenar datos persistentes.
 
-Para abrir el **Playground** solo es necesario dar clic 👉 [Aquí](https://beta.solpg.io)
+---
 
-## Configuración del entorno
+## 📦 Estructura del programa on-chain (Rust)
 
-Primero conectaremos el entorno con la devnet, lo que tambien procederá a la creación de una wallet. Para eso daremos clic en donde dice **Not Conected**:
+### Cuentas
 
-![playground1](./images/playground1.png)
+- `Database`: estructura que guarda el nombre de la base y un vector con las cuentas de usuarios.
+- `InfoUser`: estructura para cada usuario con campos:
+  - nombre
+  - tiempo de juego
+  - información general
+  - juegos favoritos
+  - calificación (u8)
 
-Saldrá la siguiente ventana donde daremos en el botón **Continue**:
+### Instrucciones (handlers)
 
-![wallet](./images/wallet.png)
+- `initialize_database`: Crea la cuenta de la base de datos inicializando nombre y usuarios vacíos.
+- `initialize_infouser`: Crea la cuenta usuario con todos sus datos.
+- `update_infouser`: Actualiza los datos de un usuario, permitiendo cambiar solo los campos deseados.
+- `delete_infouser`: Elimina la cuenta usuario y devuelve los lamports al pagador.
 
-Como resultado se mostrará la siguiente información:
+---
 
-![status](./images/status.png)
+## ⚙️ Archivo Client (TypeScript)
 
-* En verde: el estado de la conexión y el entorno al que se encuentra conectado
+El cliente ejecuta en orden:
 
-* En amarillo: la la dirección de la wallet conectada
+1. Crear la base de datos con un nombre fijo (`VideojuegosDB`).
+2. Crear un usuario con datos iniciales.
+3. Actualizar algunos campos del usuario.
+4. Eliminar el usuario.
 
-* En azul: la cantidad de tokens en la wallet
+Utiliza helpers como `fetchWithRetry` para asegurar recuperar los datos antes de continuar.
 
-> ℹ️ ¿Quieres ver el ejemplo de un "Hola Mundo" en Solana?. Da clic aquí: 👉 [Ver Ejemplo](./build-deploy/README.md)
+---
 
-> ℹ️ ¿Cuentas con una Wallet de [Phantom](https://phantom.com/) que deseas importar?, Da clic aquí para ver como hacerlo: 
+## 📝 Cómo usar
 
-👉 [Como Importar una Wallet](./import-key-a-playground/README.md)
+1. Asegúrate de tener instalado:
+   - Rust + Anchor CLI
+   - Node.js + npm/yarn
+   - Conexión a devnet o localhost Solana
 
-## ¿Listo para empezar?
+2. Compila y despliega el programa con Anchor:
+   ```bash
+   anchor build
+   anchor deploy
+   ```
 
-El primer paso es hacer `fork` al repositorio. Ya con el repositorio en tu cuenta lo siguiente que debes hacer es entrar a la carpeta `proyecto` y obtener el `permalink`:
+3. Ejecuta el cliente TypeScript para probar las funciones:
+   ```bash
+   ts-node client.ts
+   ```
 
-![permalink](./images/permalink.png)
+---
 
-El cual uniremos con el siguiente enlace en nuestro navegador de preferencia:
+## 🧐 Notas importantes
 
-```url
-https://beta.solpg.io/
-```
+- El espacio asignado a las cuentas se calcula estimando el tamaño de strings y vectores para evitar errores de space insuficiente.
+- El pago de creación de cuentas se realiza por el `user` (pagador).
+- Para actualizaciones parciales, se usa `Option<T>` en Rust y se envían valores o `null` desde el cliente para no modificar.
 
-Lo que nos dará algo parecido a:
+---
 
-![url](./images/url.png)
+## 📚 Documentación recomendada
 
-Al pulsar enter seremos enviados al `Solana Playground` con nuestro proyecto abierto:
+- [Anchor Framework Docs](https://book.anchor-lang.com/)
+- [Solana Web3.js docs](https://solana-labs.github.io/solana-web3.js/)
+- [Programación en Rust para Solana](https://docs.solana.com/developing/on-chain-programs/overview)
 
-![pg](./images/pg.png)
-
-Para guardarlo solo damos clic en el boton `import` y asignamos un nombre:
-
-![import](./images/import.png)
-
-## ¿Como actualizo mi repositorio?
-
-Una vez que realices cambios o termines tu proyecto, es necesario que **copies todo el código**, ya con el código en el portapapeles nos dirigimos nuevamente a la carpeta proyecto de tu repositorio de github **donde se obtuvo el `permalink`**, donde entraremos al carpeta `src` y al archivo `lib.rs`:
-
-![edit](./images/edit.png)
-
-En `lib.rs` presionaremos el ícono en forma de lapiz (esquina superior derecha de la imagen 👆)
-
-Nuevamente seleccionamos todo el código pero ahora presionamos `ctrl + v` para pegar el código del `Playground`. Ya realizados los cambios presionamos el botón `Commit changes`:
-
-![commit](./images/commit.png)
-
-Nos aparecerá un menú de confirmación donde nuevamente presionamos el botón `Commit changes`:
-
-![commit2](./images/commit2.png)
