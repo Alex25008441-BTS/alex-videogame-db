@@ -1,5 +1,5 @@
 
-# Proyecto VideojuegosDB en Solana con Rust y Anchor
+# Proyecto AlexVideojuegosBD en Solana con Rust y Anchor
 
 ## 📖 Descripción
 
